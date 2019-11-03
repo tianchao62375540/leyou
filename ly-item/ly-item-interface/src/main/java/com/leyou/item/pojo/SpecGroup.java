@@ -10,27 +10,19 @@ import javax.persistence.Table;
 
 /**
  * @Auther: tianchao
- * @Date: 2019/10/29 21:16
+ * @Date: 2019/11/3 13:07
  * @Description:
  */
 @Data
 @Accessors(chain = true)
-@Table(name = "tb_brand")
+@Table(name="tb_spec_group")
 @ToString
-public class Brand {
+public class SpecGroup {
     @Id
     @KeySql(useGeneratedKeys = true)
     private Long id;
-    /**
-     * 品牌名称
-     */
+
+    private Long cid;
+
     private String name;
-    /**
-     * 品牌图片
-     */
-    private String image;
-    /**
-     * 品牌首字母
-     */
-    private Character letter;
 }

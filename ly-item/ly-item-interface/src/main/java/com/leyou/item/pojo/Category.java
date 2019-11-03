@@ -1,6 +1,7 @@
 package com.leyou.item.pojo;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import tk.mybatis.mapper.annotation.KeySql;
 
@@ -15,6 +16,7 @@ import javax.persistence.Table;
 @Data
 @Accessors(chain = true)
 @Table(name = "tb_category")
+@ToString
 public class Category {
     @Id
     @KeySql(useGeneratedKeys = true)
