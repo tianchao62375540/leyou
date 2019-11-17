@@ -69,12 +69,20 @@ public class SpecificationService {
     }
 
     /**
-     * 查询指定规格组下面的规格集合
-     * @param gid
+     * 查询指定规格组下面的规格参数集合
+     * 或者查询指定分类下的规格参数集合
+     * 或者是否搜索查询规格参数集合
+     * @param gid 规格组id
+     * @param cid 分类id
+     * @param searching 是否搜索
      * @return
      */
-    public List<SpecParam> querySpecParamByGid(Long gid) {
-        List<SpecParam> list = specParamMapper.select(new SpecParam().setGroupId(gid));
+    public List<SpecParam> querySpecParamByGid(Long gid, Long cid, Boolean searching) {
+        SpecParam param = new SpecParam();
+        param.setGroupId(gid)
+                .setSearching(searching)
+                .setCid(cid);
+        List<SpecParam> list = specParamMapper.select(param);
         if(CollectionUtils.isEmpty(list)){
             throw new LyException(ExceptionEnum.SPEC_PARAM_NOT_FOUND);
         }

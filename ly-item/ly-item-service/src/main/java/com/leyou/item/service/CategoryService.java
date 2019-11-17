@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,5 +31,14 @@ public class CategoryService {
             throw new LyException(ExceptionEnum.CATEGORY_NOT_FOUND);
         }
         return list;
+    }
+
+    /**
+     * 返回Category集合
+     * @param ids
+     * @return
+     */
+    public List<Category> queryByIds(List<Long> ids){
+        return categoryMapper.selectByIdList(ids);
     }
 }

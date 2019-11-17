@@ -23,6 +23,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(LyException.class)
     public ResponseEntity<ExceptionResult> handleException(LyException e){
         ExceptionEnum exceptionEnum = e.getExceptionEnum();
+        e.printStackTrace();
         log.error("[系统自定义运行时异常]");
         return ResponseEntity.status(exceptionEnum.getCode()).body(new ExceptionResult(exceptionEnum));
     }
@@ -30,6 +31,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResult> handleException(RuntimeException e){
         ExceptionEnum exceptionEnum = ExceptionEnum.SYSTEM_ERROR;
+        e.printStackTrace();
         log.error("[系统运行时异常]");
         return ResponseEntity.status(exceptionEnum.getCode()).body(new ExceptionResult(exceptionEnum));
     }
@@ -37,6 +39,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResult> handleException(Exception e){
         ExceptionEnum exceptionEnum = ExceptionEnum.SYSTEM_ERROR;
+        e.printStackTrace();
         log.error("[系统异常]");
         return ResponseEntity.status(exceptionEnum.getCode()).body(new ExceptionResult(exceptionEnum));
     }

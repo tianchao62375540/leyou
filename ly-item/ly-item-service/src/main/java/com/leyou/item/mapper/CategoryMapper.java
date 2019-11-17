@@ -1,7 +1,7 @@
 package com.leyou.item.mapper;
 
 import com.leyou.item.pojo.Category;
-import tk.mybatis.mapper.common.BaseMapper;
+import tk.mybatis.mapper.additional.idlist.IdListMapper;
 import tk.mybatis.mapper.common.Mapper;
 
 /**
@@ -10,5 +10,5 @@ import tk.mybatis.mapper.common.Mapper;
  * @Date: 2019/10/27 20:53
  * @Description:
  */
-public interface CategoryMapper extends Mapper<Category> {
+public interface CategoryMapper extends Mapper<Category>, IdListMapper<Category,Long> {
 }
