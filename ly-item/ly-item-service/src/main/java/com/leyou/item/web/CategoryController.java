@@ -34,4 +34,15 @@ public class CategoryController {
         log.debug("=================================="+pid);
         return ResponseEntity.ok(categoryService.queryCategoryListByPid(pid));
     }
+
+    /**
+     * 根据ids,分类主键集合查询分类集合
+     */
+    @GetMapping("/list/ids")
+    public ResponseEntity<List<Category>> queryCategoryByIds(@RequestParam("ids") List<Long> ids){
+        if(ids.get(0)==1){
+            throw new RuntimeException("被调用方出错了");
+        }
+        return ResponseEntity.ok(categoryService.queryByIds(ids));
+    }
 }

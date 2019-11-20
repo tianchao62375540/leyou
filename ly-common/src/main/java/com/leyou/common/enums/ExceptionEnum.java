@@ -28,6 +28,7 @@ public enum ExceptionEnum {
     UPLOAD_FILE_ERROR(500,"文件上传失败"),
     GOODS_SAVE_ERROR(500,"新增商品失败"),
     GOODS_EDIT_ERROR(500,"修改商品失败！"),
+    INVALID_FILE_TYPE(500,"无效的文件类型"),
 
 
     ;
