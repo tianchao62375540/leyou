@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: tianchao
@@ -40,7 +41,7 @@ public class Goods {
     // 创建时间
     private Date createTime;
     // 价格
-    private List<Long> price;
+    private Set<Long> price;
     @Field(type = FieldType.Keyword, index = false)
     private String skus;// sku信息的json结构
     private Map<String, Object> specs;// 可搜索的规格参数，key是参数名，值是参数值
