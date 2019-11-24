@@ -5,15 +5,29 @@ import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.utils.JsonUtils;
 import com.leyou.common.utils.NumberUtils;
+import com.leyou.common.vo.PageResult;
 import com.leyou.item.pojo.*;
 import com.leyou.search.client.BrandClient;
 import com.leyou.search.client.CategoryClient;
 import com.leyou.search.client.GoodsClient;
 import com.leyou.search.client.SpecificationClient;
 import com.leyou.search.pojo.Goods;
+import com.leyou.search.pojo.SearchRequest;
+import com.leyou.search.pojo.SearchResult;
+import com.leyou.search.repository.GoodsRepository;
 import com.leyou.search.service.SearchService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -26,6 +40,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Service
+@Slf4j
 public class SearchServiceImpl implements SearchService {
 
     @Autowired
@@ -39,6 +54,12 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private SpecificationClient specificationClient;
+
+    @Autowired
+    private GoodsRepository goodsRepository;
+
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
 
     @Override
     public Goods buildGoods(Spu spu) {
@@ -96,13 +117,14 @@ public class SearchServiceImpl implements SearchService {
         for (SpecParam param : params) {
             String key = param.getName();
             Object value = "";
-            //特有
+            //通用
             if (param.getGeneric()) {
                 value = genericSpec.get(param.getId());
                 //处理段
                 if (param.getNumeric()) {
                     value = chooseSegment(value.toString(), param);
                 }
+            //特有
             } else {
                 value = specialSpec.get(param.getId());
             }
@@ -125,6 +147,78 @@ public class SearchServiceImpl implements SearchService {
         goods.setSpecs(specs);
         goods.setSubTitle(spu.getSubTitle());
         return goods;
+    }
+
+    /**
+     * 搜索商品
+     * @param searchRequest
+     * @return
+     */
+    @Override
+    public PageResult<Goods> search(SearchRequest searchRequest) {
+        int page = searchRequest.getPage() - 1;
+        int size = searchRequest.getSize();
+        //原生查询构建起
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+        //0结果过滤
+        nativeSearchQueryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{"id","subTitle","skus"},null));
+        //1分页
+        nativeSearchQueryBuilder.withPageable(PageRequest.of(page,size));
+        //2过滤
+        nativeSearchQueryBuilder.withQuery(QueryBuilders.matchQuery("all",searchRequest.getKey()));
+        //3聚合分类和品牌
+        //3.1聚合分类
+        String categoryAggName = "category_agg";
+        String brandAggName = "brand_agg";
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(categoryAggName).field("cid3"));
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(brandAggName).field("brandId"));
+        //4查询
+        //Page<Goods> result = goodsRepository.search(nativeSearchQueryBuilder.build());
+        AggregatedPage<Goods> result = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), Goods.class);
+        //5解析
+        //5.1解析分页结果
+        long total = result.getTotalElements();
+        Integer totalPage = result.getTotalPages();
+        List<Goods> goodsList = result.getContent();
+        //5.2解析聚合结果
+        Aggregations aggregations = result.getAggregations();
+        List<Category> categories = parseCategory(aggregations.get(categoryAggName));
+        List<Brand> brands = parseBrand(aggregations.get(brandAggName));
+        return new SearchResult(total,totalPage,goodsList,categories,brands);
+    }
+
+    /**
+     * 解析品牌
+     * @param longTerms
+     * @return
+     */
+    private List<Brand> parseBrand(LongTerms longTerms) {
+        try {
+            List<LongTerms.Bucket> buckets = longTerms.getBuckets();
+            List<Long> ids = buckets.stream().map(e -> e.getKeyAsNumber().longValue()).collect(Collectors.toList());
+            return brandClient.queryBrandByIds(ids);
+        }catch (Exception e){
+            log.error("[搜索服務]查询品牌异常:"+e);
+            return null;
+        }
+
+
+    }
+
+    /**
+     * 解析分类聚合
+     * @param longTerms
+     * @return
+     */
+    private List<Category> parseCategory(LongTerms longTerms) {
+        try {
+            List<LongTerms.Bucket> buckets = longTerms.getBuckets();
+            List<Long> ids = buckets.stream().map(e -> e.getKeyAsNumber().longValue()).collect(Collectors.toList());
+            return categoryClient.queryCategoryByIds(ids);
+        }catch (Exception e){
+            log.error("[搜索服務]查询分类异常:"+e);
+            return null;
+        }
     }
 
     private String chooseSegment(String value, SpecParam p) {
@@ -153,4 +247,6 @@ public class SearchServiceImpl implements SearchService {
         }
         return result;
     }
+
+
 }
