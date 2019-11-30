@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: tianchao
@@ -26,6 +27,13 @@ public class SearchResult extends PageResult {
      * 品牌集合
      */
     private List<Brand> brands;
+    /**
+     * 过滤项
+     */
+    private Map<String,String> filter;
+
+
+    private List<Map<String,Object>> specs;
     public SearchResult(){
     }
 
@@ -33,9 +41,11 @@ public class SearchResult extends PageResult {
                         Integer totalPage,
                         List<Goods> items,
                         List<Category> categories,
-                        List<Brand> brands){
+                        List<Brand> brands,
+                        List<Map<String,Object>> specs){
         super(total,totalPage,items);
         this.categories = categories;
         this.brands = brands;
+        this.specs = specs;
     }
 }

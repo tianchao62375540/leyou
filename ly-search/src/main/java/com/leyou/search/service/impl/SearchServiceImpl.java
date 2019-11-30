@@ -18,10 +18,14 @@ import com.leyou.search.repository.GoodsRepository;
 import com.leyou.search.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -164,8 +168,10 @@ public class SearchServiceImpl implements SearchService {
         nativeSearchQueryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{"id","subTitle","skus"},null));
         //1分页
         nativeSearchQueryBuilder.withPageable(PageRequest.of(page,size));
-        //2过滤
-        nativeSearchQueryBuilder.withQuery(QueryBuilders.matchQuery("all",searchRequest.getKey()));
+        //2搜索条件 这里改为过滤条件和查询条件分开
+        //MatchQueryBuilder basicQuery = QueryBuilders.matchQuery("all", searchRequest.getKey());
+        QueryBuilder basicQuery = buildBasicQuery(searchRequest);
+        nativeSearchQueryBuilder.withQuery(basicQuery);
         //3聚合分类和品牌
         //3.1聚合分类
         String categoryAggName = "category_agg";
@@ -184,7 +190,74 @@ public class SearchServiceImpl implements SearchService {
         Aggregations aggregations = result.getAggregations();
         List<Category> categories = parseCategory(aggregations.get(categoryAggName));
         List<Brand> brands = parseBrand(aggregations.get(brandAggName));
-        return new SearchResult(total,totalPage,goodsList,categories,brands);
+        //6 规格参数聚合
+        List<Map<String,Object>> specs = null;
+        if(categories!=null && categories.size() ==1){
+            //商品分类存在并且为1,才完成聚合分类规格参数
+            specs = buildSpecoficationAgg(categories.get(0).getId(),basicQuery);
+        }
+        return new SearchResult(total,totalPage,goodsList,categories,brands,specs);
+    }
+
+    /**
+     * 构建基本查询
+     * @param searchRequest
+     * @return
+     */
+    private QueryBuilder buildBasicQuery(SearchRequest searchRequest) {
+        //创建布尔条件
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        //查询条件
+        queryBuilder.must(QueryBuilders.matchQuery("all", searchRequest.getKey()));
+        //过滤条件
+        Map<String, String> filter = searchRequest.getFilter();
+        for (Map.Entry<String, String> entry : filter.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            //处理key 分类和品牌
+            if(!"cid3".equals(key)&&!"brandId".equals(key)){
+                key = "specs."+key+".keyword";
+            }
+            queryBuilder.filter(QueryBuilders.termsQuery(key,value));
+        }
+        return queryBuilder;
+    }
+
+    /**
+     *
+     * @param cid 商品分类id
+     * @param basicQuery 查询条件
+     * @return
+     */
+    private List<Map<String, Object>> buildSpecoficationAgg(Long cid, QueryBuilder basicQuery) {
+        List<Map<String, Object>> specs = new ArrayList<>();
+        //1查询需要聚合的规格参数
+        List<SpecParam> params = specificationClient.querySpecParamList(null,cid,true);
+        //2聚合
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+        //2.1带上查询条件
+        nativeSearchQueryBuilder.withQuery(basicQuery);
+        //2.2聚合
+        for (SpecParam param : params) {
+            String name = param.getName();
+            nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(name).field("specs."+name+".keyword"));
+        }
+        //3获取结果
+        AggregatedPage<Goods> result = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), Goods.class);
+        //4解析结果
+        Aggregations aggs = result.getAggregations();
+        for (SpecParam param : params) {
+            String name = param.getName();
+            StringTerms aggregation = aggs.get(name);
+            List<StringTerms.Bucket> buckets = aggregation.getBuckets();
+            List<String> options = buckets.stream().map(e -> e.getKeyAsString()).collect(Collectors.toList());
+            //准备map
+            Map<String,Object> map = new HashMap<>();
+            map.put("k",name);
+            map.put("options",options);
+            specs.add(map);
+        }
+        return specs;
     }
 
     /**

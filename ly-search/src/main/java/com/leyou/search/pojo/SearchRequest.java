@@ -2,6 +2,8 @@ package com.leyou.search.pojo;
 
 import lombok.Data;
 
+import java.util.Map;
+
 /**
  * @Auther: tianchao
  * @Date: 2019/11/24 13:15
@@ -15,6 +17,11 @@ public class SearchRequest {
      */
     private Integer page;
 
+    /**
+     * 过滤项
+     */
+    private Map<String,String> filter;
+
     private static final int DEFAULT_ROWS = 20;
 
     private static final int DEFAULT_PAGE = 1;
@@ -25,6 +32,14 @@ public class SearchRequest {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Map<String, String> getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Map<String, String> filter) {
+        this.filter = filter;
     }
 
     public Integer getPage() {
