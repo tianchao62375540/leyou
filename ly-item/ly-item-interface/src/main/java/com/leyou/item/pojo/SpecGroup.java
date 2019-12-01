@@ -7,6 +7,8 @@ import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * @Auther: tianchao
@@ -25,4 +27,11 @@ public class SpecGroup {
     private Long cid;
 
     private String name;
+
+    /**
+     * 扩展字段 商品详情用
+     */
+
+    @Transient
+    private List<SpecParam> params;
 }

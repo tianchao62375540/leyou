@@ -13,6 +13,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 规格组和规格参数service
@@ -112,5 +114,20 @@ public class SpecificationService {
      */
     public void deleteSpecParam(Long id) {
         specParamMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     *  根据商品分类查询规格组 包括下面的规格属性
+     * @param cid 商品分类id
+     * @return
+     */
+    public List<SpecGroup> queryGroupsByid(Long cid) {
+        //1查询规格组
+        List<SpecGroup> specGroups = queryGroupByCid(cid);
+        //2查询规格参数
+        List<SpecParam> params = querySpecParamByGid(null, cid, null);
+        Map<Long, List<SpecParam>> gidMap = params.stream().collect(Collectors.groupingBy(SpecParam::getGroupId));
+        specGroups.stream().forEach(e->e.setParams(gidMap.get(e.getId())));
+        return specGroups;
     }
 }

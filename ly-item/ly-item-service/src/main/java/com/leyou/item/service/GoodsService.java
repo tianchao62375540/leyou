@@ -235,5 +235,21 @@ public class GoodsService {
         return skuList;
     }
 
-
+    /**
+     * 根据id查询spu
+     * @param id
+     * @return
+     */
+    public Spu querySpuById(Long id) {
+        //查询spu
+        Spu spu = spuMapper.selectByPrimaryKey(id);
+        if(spu == null){
+            throw new LyException(ExceptionEnum.GOODS_NOT_FOUND);
+        }
+        //查询sku
+        spu.setSkus(querySkuBySpuId(id));
+        //查询detail
+        spu.setSpuDetail(queryDetailById(id));
+        return spu;
+    }
 }

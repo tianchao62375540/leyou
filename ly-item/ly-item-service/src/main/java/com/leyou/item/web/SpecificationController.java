@@ -124,4 +124,14 @@ public class SpecificationController {
         specService.deleteSpecParam(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    /**
+     * 根据商品分类查询规格组 包括下面的规格属性
+     * @param cid
+     * @return
+     */
+    @GetMapping("group")
+    public ResponseEntity<List<SpecGroup>> querySpuByCid(@RequestParam("cid") Long cid){
+        return ResponseEntity.ok(specService.queryGroupsByid(cid));
+    }
 }
