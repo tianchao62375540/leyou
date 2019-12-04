@@ -14,4 +14,10 @@ public interface PageService {
      * @return
      */
     Map<String,Object> loadModel(Long spuId);
+
+    /**
+     * 生成商品详情html
+     * @param spuId 商品id
+     */
+    void createGoodsHtml(Long spuId);
 }

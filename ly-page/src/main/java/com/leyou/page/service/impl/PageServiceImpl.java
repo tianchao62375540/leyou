@@ -6,9 +6,14 @@ import com.leyou.page.client.CategoryClient;
 import com.leyou.page.client.GoodsClient;
 import com.leyou.page.client.SpecificationClient;
 import com.leyou.page.service.PageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +25,7 @@ import java.util.Map;
  * @Description:
  */
 @Service
+@Slf4j
 public class PageServiceImpl implements PageService {
 
     @Autowired
@@ -33,6 +39,9 @@ public class PageServiceImpl implements PageService {
 
     @Autowired
     private SpecificationClient specificationClient;
+
+    @Autowired
+    private TemplateEngine templateEngine;
     /**
      * 查询商品详情页相关内容
      *
@@ -64,5 +73,26 @@ public class PageServiceImpl implements PageService {
         model.put("categories",categories);
         model.put("specs",specs);
         return model;
+    }
+
+    /**
+     * 生成商品详情html
+     *
+     * @param spuId 商品id
+     */
+    @Override
+    public void createGoodsHtml(Long spuId) {
+        //准备上下文
+        Context context = new Context();
+        context.setVariables(loadModel(spuId));
+        //准备输出流
+        File dest = new File("G:\\leyou-server-zongjie\\upload", spuId + ".html");
+        try (PrintWriter writer = new PrintWriter(dest,"UTF-8")){
+            //生成html
+            templateEngine.process("item",context,writer);
+        }catch (Exception e){
+            log.error("[静态页服务]生成静态页异常！",e);
+        }
+
     }
 }
