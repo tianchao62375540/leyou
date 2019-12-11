@@ -20,4 +20,10 @@ public interface PageService {
      * @param spuId 商品id
      */
     void createGoodsHtml(Long spuId);
+
+    /**
+     * 删除静态页
+     * @param spuId
+     */
+    void deleteHtml(Long spuId);
 }

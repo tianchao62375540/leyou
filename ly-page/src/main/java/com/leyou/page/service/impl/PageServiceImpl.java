@@ -76,6 +76,19 @@ public class PageServiceImpl implements PageService {
     }
 
     /**
+     * 删除静态页
+     *
+     * @param spuId
+     */
+    @Override
+    public void deleteHtml(Long spuId) {
+        File dest = new File("G:\\leyou-server-zongjie\\upload", spuId + ".html");
+        if (dest.exists()){
+            dest.delete();
+        }
+    }
+
+    /**
      * 生成商品详情html
      *
      * @param spuId 商品id
@@ -87,6 +100,9 @@ public class PageServiceImpl implements PageService {
         context.setVariables(loadModel(spuId));
         //准备输出流
         File dest = new File("G:\\leyou-server-zongjie\\upload", spuId + ".html");
+        if (dest.exists()){
+            dest.delete();
+        }
         try (PrintWriter writer = new PrintWriter(dest,"UTF-8")){
             //生成html
             templateEngine.process("item",context,writer);

@@ -200,6 +200,31 @@ public class SearchServiceImpl implements SearchService {
     }
 
     /**
+     * 创建和修改索引
+     *
+     * @param spuId
+     */
+    @Override
+    public void createOrUpdateIndex(Long spuId) {
+        //构建spu
+        Spu spu = goodsClient.querySpuById(spuId);
+        //构建goods
+        Goods goods = buildGoods(spu);
+        //存入索引库
+        goodsRepository.save(goods);
+    }
+
+    /**
+     * 删除索引 根据商品id
+     *
+     * @param spuId 商品id
+     */
+    @Override
+    public void deleteIndex(Long spuId) {
+        goodsRepository.deleteById(spuId);
+    }
+
+    /**
      * 构建基本查询
      * @param searchRequest
      * @return
