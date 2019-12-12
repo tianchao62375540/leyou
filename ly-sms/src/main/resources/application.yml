@@ -8,6 +8,9 @@ spring:
     host: 192.168.1.101
     username: leyou
     password: leyou
+  redis:
+    host: 192.168.25.133
+    port: 6379
 ly:
   sms:
     accessKeyId: LTAI4FfVsTqJwj6nGW73fsaT

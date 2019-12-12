@@ -4,15 +4,19 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
-import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.leyou.common.utils.DateUtils;
 import com.leyou.sms.config.SmsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther: tianchao
@@ -26,10 +30,18 @@ public class SmsUtils {
 
     @Autowired
     private SmsProperties prop;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     //产品名称:云通信短信API产品,开发者无需替换
     static final String product = "Dysmsapi";
     //产品域名,开发者无需替换
     static final String domain = "dysmsapi.aliyuncs.com";
+
+    private static final String KEY_PREFIX = "sms:phone:";
+
+    private static final long TIME_OUT = 60;
 
     /*// TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
     static final String accessKeyId = "LTAI4FfVsTqJwj6nGW73fsaT";
@@ -37,6 +49,13 @@ public class SmsUtils {
 
 
     public SendSmsResponse sendSms(String phoneNumber,String signName,String templateCode,String templateParam){
+        //限流
+        String key = KEY_PREFIX +  phoneNumber;
+        String value = redisTemplate.boundValueOps(key).get();
+        if (value!=null){
+            log.info("[短信服务] 发送短信验证码失败 发送频率过高,被拦截,上次发起时间:"+value);
+            return null;
+        }
         SendSmsResponse response = null;
         try {
             //可自助调整超时时间
@@ -67,15 +86,19 @@ public class SmsUtils {
 
             //hint 此处可能会抛出异常，注意catch
             response = acsClient.getAcsResponse(request);
-
             if (!"OK".equals(response.getCode())) {
                 log.error("[短信服务] 发送短信失败,phoneNumner:{}, 原因是{}",phoneNumber,response.getMessage());
+            } else {
+                redisTemplate.opsForValue().set(key, DateUtils.getDateStr(new Date(),DateUtils.YMDHMS),TIME_OUT, TimeUnit.SECONDS);
             }
         }catch (Exception e){
             e.printStackTrace();
             log.error("[短信服务] 发送短信异常,手机号码:{}, 原因是{}",phoneNumber,e);
-            return null;
         }
         return response;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateUtils.getDateStr(new Date(),DateUtils.YMDHMS));
     }
 }

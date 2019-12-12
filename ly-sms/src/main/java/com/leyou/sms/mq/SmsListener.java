@@ -55,5 +55,6 @@ public class SmsListener {
         }
         //处理消息
         smsUtils.sendSms(phone,prop.getSignName(),prop.getVerifyCodeTemplate(), JsonUtils.serialize(msg));
+        log.info("[短信服务] 发送短信验证码,手机号:{},CODE:{}",phone,msg.get("code"));
     }
 }
