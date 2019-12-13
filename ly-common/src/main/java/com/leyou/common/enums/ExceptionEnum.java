@@ -29,7 +29,8 @@ public enum ExceptionEnum {
     GOODS_SAVE_ERROR(500,"新增商品失败"),
     GOODS_EDIT_ERROR(500,"修改商品失败！"),
     INVALID_FILE_TYPE(500,"无效的文件类型"),
-
+    INVALID_USER_DATA_TYPE(400,"用户数据类型无效"),
+    INVALID_VERIFY_CODE(400,"无效的验证码"),
 
     ;
     private int code;
