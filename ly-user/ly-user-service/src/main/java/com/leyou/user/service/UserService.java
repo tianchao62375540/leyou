@@ -28,4 +28,12 @@ public interface UserService {
      * @param code
      */
     void register(User user, String code);
+
+    /**
+     * 根据用户名和密码查询用户
+     * @param username
+     * @param password
+     * @return
+     */
+    User queryUserByUsernameAndPassword(String username, String password);
 }

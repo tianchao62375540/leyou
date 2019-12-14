@@ -9,6 +9,7 @@ import com.leyou.user.service.UserService;
 import com.leyou.user.utils.CodecUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -104,5 +105,29 @@ public class UserServiceImpl implements UserService {
         user.setCreated(new Date());
         user.setId(null);
         userMapper.insert(user);
+    }
+
+    /**
+     * 根据用户名和密码查询用户
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @Override
+    public User queryUserByUsernameAndPassword(String username, String password) {
+        User record = new User();
+        record.setUsername(username);
+        User dbUser = userMapper.selectOne(record);
+        //校验
+        if (dbUser == null){
+            throw new LyException(ExceptionEnum.INVALID_USERNAME_PASSWORD);
+        }
+        //数据库加密过的
+        if (!StringUtils.equals(dbUser.getPassword(), CodecUtils.md5Hex(password,dbUser.getSalt()))) {
+            throw new LyException(ExceptionEnum.INVALID_USERNAME_PASSWORD);
+        }
+        //用户名和密码正确
+        return dbUser;
     }
 }

@@ -17,3 +17,4 @@ ly:
     accessKeySecret: OPzxcpmLXINvSBq9qOSEHK3qyE8ug0
     signName: ly商城 #签名
     verifyCodeTemplate: SMS_180058287 #验证码模板
+debug: true
