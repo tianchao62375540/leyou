@@ -3,6 +3,7 @@ package com.leyou.common.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leyou.common.exception.MyErrDecoder;
 import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,5 +147,6 @@ public class JsonUtils {
         List<Map<String, String>> maps = nativeRead(null, new TypeReference<List<Map<String, String>>>() {
         });
         System.out.println(maps);
+        System.out.println("======================================");
     }
 }

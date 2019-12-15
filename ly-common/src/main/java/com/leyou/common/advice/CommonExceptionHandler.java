@@ -3,6 +3,7 @@ package com.leyou.common.advice;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.vo.ExceptionResult;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,11 @@ public class CommonExceptionHandler {
         e.printStackTrace();
         log.error("[系统自定义运行时异常]");
         return ResponseEntity.status(exceptionEnum.getCode()).body(new ExceptionResult(exceptionEnum));
+    }
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ExceptionResult> handlerFeignException(FeignException e){
+        log.error("[通用feign异常]",e);
+        return ResponseEntity.status(e.status()).body(new ExceptionResult(e));
     }
 
     @ExceptionHandler(RuntimeException.class)

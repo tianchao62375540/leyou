@@ -19,10 +19,13 @@ zuul:
     item-service: /item/**
     search-service: /search/**
     user-service: /user/**
+    auth-service: /auth/**
     upload-service:
       path: /upload/**
       serviceId: upload-service
       strip-prefix: false
+  add-host-header: true #添加host头信息
+  sensitiveHeaders:
 ribbon:
   ConnectTimeout: 100000 # 连接超时时间(ms)
   ReadTimeout: 350000 # 通信超时时间(ms)
@@ -36,4 +39,16 @@ hystrix:
         isolation:
           thread:
             timeoutInMillisecond: 5000 # 熔断超时时长：5000ms 要超过ConnectTimeout+ReadTimeout
+ly:
+  jwt:
+    pubKeyPath: G:\leyou-server-zongjie\rsa\rsa.pub # 公钥地址
+    cookieName: LY_TOKEN
+  filter:
+    allowPaths:
+      - /api/auth
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/send
+      - /api/item
 debug: true

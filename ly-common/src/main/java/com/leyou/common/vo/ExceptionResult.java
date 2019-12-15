@@ -1,6 +1,7 @@
 package com.leyou.common.vo;
 
 import com.leyou.common.enums.ExceptionEnum;
+import feign.FeignException;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -27,5 +28,10 @@ public class ExceptionResult {
         this.msg = ex.getBindingResult().getFieldErrors()
                 .stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining("|"));
         this.timestamp = System.currentTimeMillis();
+    }
+    public ExceptionResult(FeignException e){
+        this.status = e.status();
+        this.timestamp = System.currentTimeMillis();
+        this.msg = e.getMessage();
     }
 }
