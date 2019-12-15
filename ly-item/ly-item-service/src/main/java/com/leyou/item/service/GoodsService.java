@@ -232,11 +232,19 @@ public class GoodsService {
             }
             s.setStock(stock.getStock());
         }*/
+        setStockNum(skuList);
+        return skuList;
+    }
+
+    /**
+     *根据sku集合补充库存量字段
+     * @param skuList
+     */
+    private void setStockNum(List<Sku> skuList) {
         List<Long> skuIds = skuList.stream().map(Sku::getId).collect(Collectors.toList());
         List<Stock> stockList = stockMapper.selectByIdList(skuIds);
         Map<Long, Integer> stockMap = stockList.stream().collect(Collectors.toMap(Stock::getSkuId, Stock::getStock));
         skuList.stream().forEach(e->e.setStock(stockMap.get(e.getId())));
-        return skuList;
     }
 
     /**
@@ -255,5 +263,20 @@ public class GoodsService {
         //查询detail
         spu.setSpuDetail(queryDetailById(id));
         return spu;
+    }
+
+    /**
+     *
+     * @param ids
+     * @return
+     */
+    public List<Sku> querySkuBySkuIds(List<Long> ids) {
+        List<Sku> skus = skuMapper.selectByIdList(ids);
+        if(CollectionUtils.isEmpty(skus)){
+            throw new LyException(ExceptionEnum.GOODS_SKU_NOT_FOUND);
+        }
+        //根据sku集合补充库存量字段
+        setStockNum(skus);
+        return skus;
     }
 }

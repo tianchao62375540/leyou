@@ -82,6 +82,16 @@ public class GoodsController {
     }
 
     /**
+     * 根据skuId的集合查询所有sku
+     * @param ids skuId集合
+     * @return
+     */
+    @GetMapping("sku/list/ids")
+    public ResponseEntity<List<Sku>> querySkuBySkuIds(@RequestParam("ids") List<Long> ids){
+        return ResponseEntity.ok(goodsService.querySkuBySkuIds(ids));
+    }
+
+    /**
      * 根据id查询spu
      * @param id
      * @return
