@@ -2,6 +2,7 @@ package com.leyou.item.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.leyou.common.dto.CartDTO;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.vo.PageResult;
@@ -278,5 +279,20 @@ public class GoodsService {
         //根据sku集合补充库存量字段
         setStockNum(skus);
         return skus;
+    }
+
+    /**
+     * 减去库存
+     * @param carts
+     */
+    @Transactional
+    public void decrease(List<CartDTO> carts) {
+        for (CartDTO cart : carts) {
+            //查询库存
+            int count = stockMapper.decreaseStock(cart.getSkuId(),cart.getNum());
+            if (count != 1){
+                throw new LyException(ExceptionEnum.STOCK_NOT_ENOUGH);
+            }
+        }
     }
 }

@@ -1,0 +1,4 @@
+ly:
+  jwt:
+    pubKeyPath: G:\leyou-server-zongjie\rsa\rsa.pub # 公钥地址
+    cookieName: LY_TOKEN

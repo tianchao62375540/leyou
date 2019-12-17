@@ -5,10 +5,7 @@ import com.leyou.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,8 +31,39 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 查询购物车列表
+     * @return
+     */
     @GetMapping("list")
     public ResponseEntity<List<Cart>> queryCartList(){
         return ResponseEntity.status(HttpStatus.OK).body(cartService.queryCartList());
     }
+
+    /**
+     * 修改购物车数量
+     * @param id
+     * @param num
+     * @return
+     */
+    @PutMapping
+    public ResponseEntity<Void> updateCartNum(
+            @RequestParam("id") Long id,
+            @RequestParam("num") Integer num){
+        cartService.updateCartNum(id,num);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 删除购物车（根据指定的商品id）
+     * @param skuId 商品id
+     * @return
+     */
+    @DeleteMapping("{skuId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable("skuId") Long skuId){
+        cartService.deleteCart(skuId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
 }

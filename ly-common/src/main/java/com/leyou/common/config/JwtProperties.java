@@ -1,4 +1,4 @@
-package com.leyou.gateway.config;
+package com.leyou.common.config;
 
 import com.leyou.common.utils.RsaUtils;
 import lombok.Data;

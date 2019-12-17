@@ -9,6 +9,7 @@ import com.leyou.common.exception.LyException;
 import com.leyou.common.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +73,48 @@ public class CartServiceImpl implements CartService {
         }
         BoundHashOperations<String, Object, Object> operations = redisTemplate.boundHashOps(key);
         return operations.values().stream().map(e -> JsonUtils.parseBean(e.toString(), Cart.class)).collect(Collectors.toList());
+    }
+
+    /**
+     * 修改购物车数量
+     *
+     * @param skuId 商品id
+     * @param num 修改到的数量
+     */
+    @Override
+    public void updateCartNum(Long skuId, Integer num) {
+        //获取登录用户
+        UserInfo user = UserInfoContext.getUser();
+        //Key
+        String key = KEY_PREFIX + user.getId();
+        //hashKey
+        String hashKey = skuId.toString();
+        BoundHashOperations<String, Object, Object> operations = redisTemplate.boundHashOps(KEY_PREFIX + user.getId());
+        //判断hashkey是否存在
+        if (!operations.hasKey(hashKey)) {
+            throw new LyException(ExceptionEnum.CART_NOT_FOUND);
+        }
+        Cart cart = JsonUtils.parseBean(operations.get(hashKey).toString(), Cart.class);
+        cart.setNum(num);
+        //写回redis
+        operations.put(hashKey,JsonUtils.serialize(cart));
+    }
+
+    /**
+     * 根据skuId删除购物车
+     *
+     * @param skuId
+     */
+    @Override
+    public void deleteCart(Long skuId) {
+        //获取登录用户
+        UserInfo user = UserInfoContext.getUser();
+        //Key
+        String key = KEY_PREFIX + user.getId();
+        //HashKey
+        String hashKey = skuId.toString();
+        //删除
+        HashOperations<String, Object, Object> operations = redisTemplate.opsForHash();
+        operations.delete(key,hashKey);
     }
 }

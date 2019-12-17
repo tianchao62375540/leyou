@@ -21,4 +21,17 @@ public interface CartService {
      * @return
      */
     List<Cart> queryCartList();
+
+    /**
+     *  修改购物车数量
+     * @param id
+     * @param num
+     */
+    void updateCartNum(Long id, Integer num);
+
+    /**
+     * 根据skuId删除购物车
+     * @param skuId
+     */
+    void deleteCart(Long skuId);
 }
