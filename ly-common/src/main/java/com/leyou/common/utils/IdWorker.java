@@ -1,8 +1,14 @@
 package com.leyou.common.utils;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.springframework.format.datetime.joda.JodaDateTimeFormatAnnotationFormatterFactory;
+import org.springframework.format.datetime.joda.JodaTimeContext;
+
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 
 /**
  * <p>名称：IdWorker.java</p>
@@ -157,6 +163,26 @@ public class IdWorker {
             System.out.println(" getDatacenterId: " + e.getMessage());
         }
         return id;
+    }
+
+    public static void main(String[] args) {
+        //System.out.println(System.currentTimeMillis());
+        long time = 1L<<41;
+        System.out.println(time);
+        System.out.println(time/3600/1000/24/365);
+        time = 1<<3;
+        System.out.println(time);
+        System.out.println("=============");
+        System.out.println(Long.toBinaryString(-1L << 5L));
+        System.out.println(Long.toBinaryString(-1L));
+        System.out.println(-1L ^ (-1L << 5L));
+        System.out.println(DateUtils.format(1288834974657L, DateUtils.FORMAT_TIME));
+        System.out.println(-1L ^ (-1L << sequenceBits));
+        System.out.println((1<<12)-1);
+        IdWorker idWorker = new IdWorker(1,2);
+        System.out.println(idWorker.nextId());
+        System.out.println(1&31);
+        System.out.println(33&31);
     }
 
 

@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Auther: tianchao
@@ -26,10 +28,15 @@ public class JwtUtils {
      * @throws Exception
      */
     public static String generateToken(UserInfo userInfo, PrivateKey privateKey, int expireMinutes) throws Exception {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",userInfo.getId());
+        map.put("username",userInfo.getUsername());
         return Jwts.builder()
-                .claim(JwtConstans.JWT_KEY_ID, userInfo.getId())
-                .claim(JwtConstans.JWT_KEY_USER_NAME, userInfo.getUsername())
-                .setExpiration(DateTime.now().plusDays(expireMinutes).toDate())
+                //.claim(JwtConstans.JWT_KEY_ID, userInfo.getId())
+                //.claim(JwtConstans.JWT_KEY_USER_NAME, userInfo.getUsername())
+                .setClaims(map)
+                //.setExpiration(DateTime.now().plusDays(expireMinutes).toDate())
+                .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
     }
@@ -44,9 +51,11 @@ public class JwtUtils {
      * @throws Exception
      */
     public static String generateToken(UserInfo userInfo, byte[] privateKey, int expireMinutes) throws Exception {
+
         return Jwts.builder()
                 .claim(JwtConstans.JWT_KEY_ID, userInfo.getId())
                 .claim(JwtConstans.JWT_KEY_USER_NAME, userInfo.getUsername())
+
                 .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, RsaUtils.getPrivateKey(privateKey))
                 .compact();

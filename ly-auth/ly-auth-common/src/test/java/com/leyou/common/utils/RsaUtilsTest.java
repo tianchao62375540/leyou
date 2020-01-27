@@ -43,13 +43,15 @@ public class RsaUtilsTest {
 
     @Test
     public void testGenerateToken() throws Exception {
-        String token = JwtUtils.generateToken(new UserInfo(15L, "田超"), privateKey, 50);
+        String token = JwtUtils.generateToken(new UserInfo(15L, "田超"), privateKey, 30);
         System.out.println("token:"+token);
+        String token1 = JwtUtils.generateToken(new UserInfo(15L, "田超"), privateKey, 30);
+        System.out.println(token.equals(token1));
         //eyJhbGciOiJSUzI1NiJ9.eyJpZCI6MTUsInVzZXJuYW1lIjoi55Sw6LaFIiwiZXhwIjoxNTgwNjUzNzI4fQ.glquHCoZTyBb5-_ExOaj7DUMT0PfXuwifZNXhWzreMP2PTmNVey3dpkGrFsdmrKFDEn9euf7pqM5vPiBgJWswOzHwkbqmu7MHznfvBEBjbRvIXVQ4SKLY3q3pnKDOVmvaNsRVn7W4Ry9sU-G6lvmlgYCJWqzx9588ioe6yEuywI
     }
     @Test
     public void testParseToken() throws Exception {
-        String token = "eyJhbGciOiJSUzI1NiJ9.eyJpZCI6MTUsInVzZXJuYW1lIjoi55Sw6LaFIiwiZXhwIjoxNTgwNjUzNzI4fQ.glquHCoZTyBb5-_ExOaj7DUMT0PfXuwifZNXhWzreMP2PTmNVey3dpkGrFsdmrKFDEn9euf7pqM5vPiBgJWswOzHwkbqmu7MHznfvBEBjbRvIXVQ4SKLY3q3pnKDOVmvaNsRVn7W4Ry9sU-G6lvmlgYCJWqzx9588ioe6yEuywI";
+        String token = "eyJhbGciOiJSUzI1NiJ9.eyJpZCI6MTUsImV4cCI6MTU3ODMyNTYwMCwidXNlcm5hbWUiOiLnlLDotoUifQ.Vrx1Hmu_YE6--lyJwbMurUO0u1Uc9lmpigf30or8Fc_RMCpsRxomMtki8uzBWTFchn0YlSKYd6w-tB1bTAqM6pmSF-19US81_BEVmzXKZPU3aUI-ZI043_VMjnnqhJIWe5YVTYbsOzuooDxdVuSjqOI3fDBn_w-Qu6t-1LQZljs";
         UserInfo userInfo = JwtUtils.getInfoFromToken(token,publicKey);
         System.out.println(userInfo);
     }

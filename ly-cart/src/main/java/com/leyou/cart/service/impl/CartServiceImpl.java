@@ -55,7 +55,6 @@ public class CartServiceImpl implements CartService {
         }
         //写回redis
         operations.put(hashKey,JsonUtils.serialize(cart));
-
     }
 
     /**

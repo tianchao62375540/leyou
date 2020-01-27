@@ -4,6 +4,7 @@ import com.aliyuncs.exceptions.ClientException;
 import com.leyou.common.utils.JsonUtils;
 import com.leyou.sms.config.SmsProperties;
 import com.leyou.sms.utils.SmsUtils;
+import com.rabbitmq.client.ConfirmCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -16,6 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -26,7 +28,7 @@ import java.util.Map;
 @Component
 @Slf4j
 @EnableConfigurationProperties(SmsProperties.class)
-public class SmsListener {
+public class SmsListener{
 
     @Autowired
     private SmsProperties prop;
@@ -57,4 +59,6 @@ public class SmsListener {
         smsUtils.sendSms(phone,prop.getSignName(),prop.getVerifyCodeTemplate(), JsonUtils.serialize(msg));
         log.info("[短信服务] 发送短信验证码,手机号:{},CODE:{}",phone,msg.get("code"));
     }
+
+
 }

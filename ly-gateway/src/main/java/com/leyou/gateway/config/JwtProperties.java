@@ -32,5 +32,5 @@ public class JwtProperties {
         // 获取公钥和私钥
         this.publicKey = RsaUtils.getPublicKey(pubKeyPath);
     }
-    
+
 }
