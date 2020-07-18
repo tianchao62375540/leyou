@@ -40,6 +40,11 @@ public enum ExceptionEnum {
     ORDER_NOT_FOUND(404,"订单不存在"),
     ORDER_DETAIL_NOT_FOUND(404,"订单详情不存在"),
     ORDER_STATUS_NOT_FOUND(404,"订单状态不存在"),
+    WX_PAY_ORDER_FAIL(500,"微信下单失败"),
+    ORDER_STATUS_ERROR(400,"订单状态有误"),
+    INVALID_SIGN_ERROR(400,"无效的签名"),
+    INVALID_ORDER_PARAM(400,"订单参数异常"),
+    UPDATE_ORDER_STATUS_ERROR(500,"修改订单状态异常"),
     ;
     private int code;
     private String msg;

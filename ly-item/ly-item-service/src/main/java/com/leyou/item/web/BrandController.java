@@ -27,7 +27,7 @@ public class BrandController {
      * @param rows 每页数量
      * @param sortBy 排序
      * @param desc 正排序还是倒排序 true:倒排序  false:正排序
-     * @param key 搜索条件
+     * @param key 搜索条件constant
      * @return
      */
     @GetMapping("page")

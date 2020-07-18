@@ -1,7 +1,10 @@
 package com.leyou.order.service;
 
 import com.leyou.order.dto.OrderDTO;
+import com.leyou.order.enums.PayState;
 import com.leyou.order.pojo.Order;
+
+import java.util.Map;
 
 /**
  * @Auther: tianchao
@@ -22,4 +25,19 @@ public interface OrderService {
      * @return
      */
     Order queryOrderById(Long id);
+
+    /**
+     * 生成预下单url
+     * @param orderId
+     * @return
+     */
+    String createPayUrl(Long orderId);
+
+    /**
+     * h回调处理
+     * @param result
+     */
+    void handleNotify(Map<String, String> result);
+
+    PayState queryOrderState(Long orderId);
 }

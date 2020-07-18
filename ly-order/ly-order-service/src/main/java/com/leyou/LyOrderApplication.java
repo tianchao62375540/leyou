@@ -19,7 +19,6 @@ import java.sql.DriverManager;
 @MapperScan("com.leyou.order.mapper")
 public class LyOrderApplication {
     public static void main(String[] args) {
-        DriverManager.getConnection()
         SpringApplication.run(LyOrderApplication.class,args);
     }
 }

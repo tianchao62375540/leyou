@@ -30,7 +30,7 @@ public class MvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new UserInterceptor(jwtProperties)).addPathPatterns("/**");
+        registry.addInterceptor(new UserInterceptor(jwtProperties)).addPathPatterns("/order/**");
     }
 
     /**

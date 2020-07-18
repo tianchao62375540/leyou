@@ -8,7 +8,7 @@ package com.leyou.order.enums;
 public enum OrderStatusEnums {
 
     UNPAY(1,"未付款"),
-    PAY(2,"已付款,未发货"),
+    PAYED(2,"已付款,未发货"),
     DELIVERED(3,"已发货,未确认"),
     SUCCESS(4,"已确认,未评价"),
     CLOSED(5,"交易失败,已关闭"),

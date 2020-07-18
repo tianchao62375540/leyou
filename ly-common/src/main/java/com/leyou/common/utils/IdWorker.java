@@ -5,9 +5,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.format.datetime.joda.JodaDateTimeFormatAnnotationFormatterFactory;
 import org.springframework.format.datetime.joda.JodaTimeContext;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 
 /**
@@ -165,9 +168,9 @@ public class IdWorker {
         return id;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException, SocketException, UnsupportedEncodingException {
         //System.out.println(System.currentTimeMillis());
-        long time = 1L<<41;
+        /*long time = 1L<<41;
         System.out.println(time);
         System.out.println(time/3600/1000/24/365);
         time = 1<<3;
@@ -182,7 +185,13 @@ public class IdWorker {
         IdWorker idWorker = new IdWorker(1,2);
         System.out.println(idWorker.nextId());
         System.out.println(1&31);
-        System.out.println(33&31);
+        System.out.println(33&31);*/
+        System.out.println(-1^(-1<<5));
+        InetAddress ip = InetAddress.getLocalHost();
+        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+        byte[] hardwareAddress = network.getHardwareAddress();
+        System.out.println(hardwareAddress[0]);
+        System.out.println(new String(hardwareAddress,"ISO-8859-1"));
     }
 
 
